@@ -93,12 +93,18 @@ class ProfCoursTest extends TestCase
             new Cours("Cours7", "3", 5),       // idcours = 7   ** A SUPPRIMER **
             new Cours("Cours8", "4", 5),       // idcours = 8
             new Cours("Cours9", "3", 5),        // idcours = 9   ** A MODIFIER **
-            
+
             /**
             *
             * Question 7 : Insérer les enregistrements suivantes dans la table cours
             *
             */
+
+            new Cours("IOT",   "10", 1),
+            new Cours("IA",    "12", 3),
+            new Cours("EDL",   "5",  6)
+            
+
 
         ];
         
@@ -186,6 +192,11 @@ class ProfCoursTest extends TestCase
         * Question 8 : Dans la fonction « testAdd() », s’inspirer de test d’ajout des profs pour tester l’ajout des cours.   
         *
         */
+        $expected = count(self::$cours_a);
+        $num_records = Prof::count($conn);
+        $this->assertEquals($expected, $num_records, "Enregistrement des cours ...\n");
+        $this->assertCount($num_records, self::$cours_a, "Enregistrement des cours ...\n");
+
         
     }
     
@@ -218,6 +229,13 @@ class ProfCoursTest extends TestCase
         * s’inspirer de test de la sélection et affichage des profs pour tester la sélection et l’affichage des cours.   
         *
         */
+        $record_cours_a = Cours::printAll($conn);
+        print "########## - LISTE DES COURS - AVANT TOUT ########## \n";
+        foreach ( $record_cours_a as $record_cours ) {
+            print $record_cours;
+        }
+        print "################################################################\n\n";
+        $this->assertCount(count(Self::$prof_a), $record_cours_a, "Nombre d'enregistrement égale pour Cours\n");
   
         
     }
@@ -262,6 +280,13 @@ class ProfCoursTest extends TestCase
         $this->assertEquals($expected, $prof_str, "Prof \n");
 
         // Cours
+        $cours = Cours::printOne($conn);
+        $cours_str = $cours->__toString();
+        print "########## - 1e COURS EN BASE - ########## \n";
+        print $cours_str."\n";
+        print "################################################################\n\n";
+        $expected = self::$cours_a[0]->__toString();
+        $this->assertEquals($expected, $cours_str, "Cours \n");
         
         /**
         *
@@ -327,6 +352,12 @@ class ProfCoursTest extends TestCase
         * s’inspirer de test de la modification du prof avec idProf= 10 pour tester la modification du cours dans ayant comme idCours = 9.
         *
         */
+        $cours = new Cours($this->intitule, $this->duree, $this->prof);
+        $val = $cours->updateOne($conn, $idCours);
+        $expected_cours_str = $cours->__toString();
+        $record_cours = Cours::printOne($conn, $idCours);
+        $this->assertEquals($expected_cours_str, $record_cours->__toString(), "Update du Cours $idCours ...\n");
+        $this->assertTrue($val, "Update du Cours num $idCours ...\n");
        
         
         
@@ -439,7 +470,14 @@ class ProfCoursTest extends TestCase
         print "################################################################\n\n";
 
         // Cours
-        
+        $val = Cours::deleteOne($conn);
+        $this->assertTrue($val, "Premier cours supprimé avec succès\n");
+        $record_cours_a = Cours::printAll($conn);
+        print "@@@@@@@@@@@@@ - LISTE DES COURS APRES SUPPRESSION - Vérifier avec celui juste avant (1e supprimer) ########## \n";
+        foreach( $record_cours_a as $record_cours) {
+            print $record_cours;
+        }
+        print "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n\n";
         /**
         *
         * Question 12 :	Dans la fonction « testDeleteOne() », 
